@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Syawal — Cybersecurity Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #080808;
+    --white: #f5f5f0;
+    --gray-dark: #1a1a1a;
+    --gray-mid: #2e2e2e;
+    --gray-light: #888;
+    --gray-subtle: #c8c8c0;
+    --accent: #e8e8e0;
+    --border: rgba(245,245,240,0.12);
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CUSTOM CURSOR */
+  .cursor {
+    position: fixed;
+    width: 10px; height: 10px;
+    background: var(--white);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%,-50%);
+    transition: transform 0.1s, width 0.2s, height 0.2s, background 0.2s;
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 36px; height: 36px;
+    border: 1px solid rgba(245,245,240,0.5);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%,-50%);
+    transition: transform 0.18s ease-out, width 0.25s, height 0.25s;
+  }
+  body:hover .cursor { opacity: 1; }
+  a:hover ~ .cursor, button:hover ~ .cursor { width: 18px; height: 18px; }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.6rem 4rem;
+    mix-blend-mode: normal;
+  }
+  nav::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 4rem; right: 4rem;
+    height: 1px;
+    background: var(--border);
+  }
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 0.15em;
+    color: var(--white);
+    text-decoration: none;
+  }
+  .nav-links {
+    display: flex;
+    gap: 2.4rem;
+    list-style: none;
+  }
+  .nav-links a {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    color: var(--gray-light);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.2s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -3px; left: 0;
+    width: 0; height: 1px;
+    background: var(--white);
+    transition: width 0.25s;
+  }
+  .nav-links a:hover { color: var(--white); }
+  .nav-links a:hover::after { width: 100%; }
+
+  /* HAMBURGER */
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    padding: 4px;
+  }
+  .hamburger span {
+    display: block;
+    width: 24px; height: 1px;
+    background: var(--white);
+    transition: all 0.3s;
+  }
+  .hamburger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+  /* HERO */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 10rem 4rem 6rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    color: var(--gray-light);
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 32px; height: 1px;
+    background: var(--gray-light);
+  }
+
+  .hero-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(5rem, 14vw, 13rem);
+    line-height: 0.88;
+    letter-spacing: -0.01em;
+    color: var(--white);
+    opacity: 0;
+    animation: fadeUp 0.9s 0.4s forwards;
+  }
+  .hero-name span {
+    display: block;
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--white);
+  }
+
+  .hero-tagline {
+    font-family: 'DM Sans', sans-serif;
+    font-size: clamp(0.95rem, 1.5vw, 1.2rem);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--gray-subtle);
+    max-width: 520px;
+    margin-top: 2.5rem;
+    line-height: 1.7;
+    opacity: 0;
+    animation: fadeUp 0.9s 0.6s forwards;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 1.2rem;
+    margin-top: 3.5rem;
+    opacity: 0;
+    animation: fadeUp 0.9s 0.8s forwards;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.9rem 2.2rem;
+    text-decoration: none;
+    border: 1px solid var(--white);
+    color: var(--white);
+    transition: background 0.25s, color 0.25s;
+    display: inline-block;
+  }
+  .btn:hover { background: var(--white); color: var(--black); }
+  .btn-ghost {
+    border-color: var(--border);
+    color: var(--gray-light);
+  }
+  .btn-ghost:hover { background: var(--gray-mid); color: var(--white); border-color: var(--gray-mid); }
+
+  .hero-scroll {
+    position: absolute;
+    bottom: 2.5rem; right: 4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--gray-light);
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fadeUp 1s 1s forwards;
+    writing-mode: vertical-rl;
+  }
+  .scroll-line {
+    width: 1px; height: 48px;
+    background: linear-gradient(to bottom, var(--gray-light), transparent);
+    animation: scrollPulse 1.8s ease-in-out infinite;
+  }
+  @keyframes scrollPulse {
+    0%, 100% { transform: scaleY(1); opacity: 1; }
+    50% { transform: scaleY(0.5); opacity: 0.4; }
+  }
+
+  /* SECTIONS COMMON */
+  section { padding: 7rem 4rem; }
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.22em;
+    color: var(--gray-light);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 3.5rem;
+  }
+  .section-label::before {
+    content: '';
+    display: inline-block;
+    width: 24px; height: 1px;
+    background: var(--gray-light);
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3rem, 7vw, 6rem);
+    line-height: 0.9;
+    letter-spacing: 0.01em;
+    color: var(--white);
+    margin-bottom: 3rem;
+  }
+
+  /* ABOUT */
+  #about { background: var(--gray-dark); }
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 6rem;
+    align-items: center;
+    max-width: 1100px;
+  }
+  .about-photo-wrap {
+    position: relative;
+  }
+  .about-photo-wrap::before {
+    content: '';
+    position: absolute;
+    inset: -12px -12px 12px 12px;
+    border: 1px solid var(--border);
+    pointer-events: none;
+  }
+  .about-photo-wrap img {
+    width: 100%;
+    height: 100% ; 
+    object-fit: cover;
+    filter: grayscale(50%) contrast(1.1);
+    transition: filter 0.4s;
+  }
+  .about-photo-wrap:hover img { filter: grayscale(0%) contrast(1.05); }
+  .about-photo-tag {
+    position: absolute;
+    bottom: 1.2rem; right: -1.2rem;
+    background: var(--white);
+    color: var(--black);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    padding: 0.5rem 1rem;
+    text-transform: uppercase;
+  }
+
+  .about-text p {
+    font-size: 1.05rem;
+    line-height: 1.85;
+    color: var(--gray-subtle);
+    margin-bottom: 1.5rem;
+    font-weight: 300;
+  }
+  .about-text p strong { color: var(--white); font-weight: 500; }
+
+  .about-contact {
+    margin-top: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .contact-item {
+    display: flex;
+    gap: 1.2rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+  }
+  .contact-item .label { color: var(--gray-light); min-width: 60px; }
+  .contact-item .value { color: var(--white); }
+  .contact-item a { color: var(--white); text-decoration: none; border-bottom: 1px solid var(--border); padding-bottom: 1px; transition: border-color 0.2s; }
+  .contact-item a:hover { border-color: var(--white); }
+
+  /* SKILLS */
+  #skills { background: var(--black); }
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1px;
+    border: 1px solid var(--border);
+    max-width: 1100px;
+  }
+  .skill-card {
+    padding: 2.5rem;
+    border-right: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    transition: background 0.25s;
+  }
+  .skill-card:last-child { border-right: none; }
+  .skill-card::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 100%; height: 0;
+    background: var(--white);
+    transition: height 0.35s ease;
+    z-index: 0;
+  }
+  .skill-card:hover::before { height: 100%; }
+  .skill-card:hover .skill-icon,
+  .skill-card:hover .skill-name,
+  .skill-card:hover .skill-desc { color: var(--black); }
+  .skill-card > * { position: relative; z-index: 1; }
+
+  .skill-icon {
+    font-size: 1.6rem;
+    margin-bottom: 1.2rem;
+    transition: color 0.25s;
+    display: block;
+  }
+  .skill-name {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.82rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--white);
+    margin-bottom: 0.6rem;
+    transition: color 0.25s;
+  }
+  .skill-desc {
+    font-size: 0.88rem;
+    color: var(--gray-light);
+    line-height: 1.6;
+    transition: color 0.25s;
+  }
+
+  /* EXPERIENCE */
+  #experience { background: var(--gray-dark); }
+  .experience-list { max-width: 800px; }
+  .exp-item {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 3rem;
+    padding: 2.5rem 0;
+    border-top: 1px solid var(--border);
+    position: relative;
+    transition: all 0.2s;
+  }
+  .exp-item:last-child { border-bottom: 1px solid var(--border); }
+  .exp-item::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 0;
+    background: var(--white);
+    transition: width 0.4s ease;
+    z-index: 0;
+  }
+  .exp-item:hover::before { width: 3px; }
+  .exp-item > * { position: relative; z-index: 1; }
+
+  .exp-date {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--gray-light);
+    letter-spacing: 0.05em;
+    padding-top: 0.2rem;
+    line-height: 1.6;
+  }
+  .exp-company {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--gray-light);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 0.3rem;
+  }
+  .exp-role {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    letter-spacing: 0.04em;
+    color: var(--white);
+    margin-bottom: 0.8rem;
+  }
+  .exp-desc {
+    font-size: 0.92rem;
+    color: var(--gray-subtle);
+    line-height: 1.75;
+  }
+  .exp-tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+  }
+  .exp-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: 1px solid var(--border);
+    color: var(--gray-light);
+    padding: 0.25rem 0.7rem;
+  }
+
+  /* EDUCATION */
+  #education { background: var(--black); }
+  .edu-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    max-width: 900px;
+    border: 1px solid var(--border);
+  }
+  .edu-card {
+    padding: 2.5rem;
+    position: relative;
+    border-right: 1px solid var(--border);
+    transition: background 0.3s;
+  }
+  .edu-card:last-child { border-right: none; }
+  .edu-card:hover { background: var(--gray-dark); }
+  .edu-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 4rem;
+    color: transparent;
+    -webkit-text-stroke: 1px var(--border);
+    line-height: 1;
+    margin-bottom: 1.2rem;
+  }
+  .edu-school {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gray-light);
+    margin-bottom: 0.6rem;
+  }
+  .edu-degree {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: var(--white);
+    line-height: 1.4;
+  }
+
+  /* TERMINAL SECTION */
+  #terminal-section { background: var(--black); padding: 5rem 4rem; }
+  .terminal {
+    max-width: 720px;
+    background: #0d0d0d;
+    border: 1px solid var(--border);
+    border-radius: 0;
+    overflow: hidden;
+  }
+  .terminal-header {
+    background: var(--gray-dark);
+    padding: 0.8rem 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #3d3d3d; }
+  .dot-y { background: #3d3d3d; }
+  .dot-g { background: #3d3d3d; }
+  .terminal-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--gray-light);
+    letter-spacing: 0.08em;
+    margin-left: 0.5rem;
+  }
+  .terminal-body {
+    padding: 1.8rem 1.8rem 2rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.8rem;
+    line-height: 2;
+    min-height: 220px;
+  }
+  .t-prompt { color: #4a9eff; }
+  .t-cmd { color: var(--white); }
+  .t-out { color: var(--gray-subtle); }
+  .t-green { color: #6bcb77; }
+  .t-dim { color: #444; }
+  .t-cursor {
+    display: inline-block;
+    width: 8px; height: 14px;
+    background: var(--white);
+    vertical-align: text-bottom;
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
+
+  /* FOOTER */
+  footer {
+    background: var(--gray-dark);
+    padding: 3rem 4rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: gap;
+    gap: 1rem;
+  }
+  .footer-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 0.12em;
+    color: var(--white);
+  }
+  .footer-copy {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--gray-light);
+    letter-spacing: 0.08em;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* MOBILE NAV */
+  @media (max-width: 768px) {
+    nav { padding: 1.4rem 1.8rem; }
+    nav::after { left: 1.8rem; right: 1.8rem; }
+    .hamburger { display: flex; }
+    .nav-links {
+      position: fixed;
+      top: 0; right: -100%;
+      bottom: 0;
+      width: min(280px, 100vw);
+      background: var(--gray-dark);
+      border-left: 1px solid var(--border);
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 3rem 2.5rem;
+      gap: 2rem;
+      transition: right 0.4s ease;
+      z-index: 99;
+    }
+    .nav-links.open { right: 0; }
+    .nav-links a { font-size: 0.85rem; }
+
+    #hero { padding: 8rem 1.8rem 5rem; }
+    .hero-scroll { display: none; }
+    section { padding: 5rem 1.8rem; }
+
+    .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+    .about-photo-wrap { max-width: 300px; }
+
+    .exp-item { grid-template-columns: 1fr; gap: 0.5rem; }
+    .exp-date { font-size: 0.65rem; }
+
+    .edu-grid { grid-template-columns: 1fr; }
+    .edu-card { border-right: none; border-bottom: 1px solid var(--border); }
+    .edu-card:last-child { border-bottom: none; }
+
+    footer { flex-direction: column; align-items: flex-start; padding: 2.5rem 1.8rem; }
+  }
+
+  @media (max-width: 480px) {
+    .skills-grid { grid-template-columns: 1fr; }
+    .skill-card { border-right: none; border-bottom: 1px solid var(--border); }
+  }
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#hero" class="nav-logo">SYAWAL</a>
+  <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#about" onclick="closeMenu()">About</a></li>
+    <li><a href="#skills" onclick="closeMenu()">Skills</a></li>
+    <li><a href="#experience" onclick="closeMenu()">Experience</a></li>
+    <li><a href="#education" onclick="closeMenu()">Education</a></li>
+    <li><a href="#terminal-section" onclick="closeMenu()">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-eyebrow">Cybersecurity &amp; IT Professional</div>
+  <h1 class="hero-name">
+    Syawal
+    <span>Fanzury</span>
+  </h1>
+  <p class="hero-tagline">"Driven to grow in IT support, system security, and penetration testing through continuous learning."</p>
+  <div class="hero-cta">
+    <a href="#about" class="btn">View Profile</a>
+    <a href="mailto:sfanzury@gmail.com" class="btn btn-ghost">Get In Touch</a>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    Scroll
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-label">01 — About Me</div>
+  <div class="about-grid reveal">
+    <div class="about-photo-wrap">
+      <img src="C:/Users/sfanz/Desktop/Assesment UTHM/SEMESTER 2/BIW20303-WEB DESIGN/Portfolio/MyPort.jpeg"
+           onerror="this.style.display='none'; this.parentElement.querySelector('.photo-placeholder').style.display='flex';"
+           alt="Syawal">
+
+    </div>
+    <div class="about-text">
+      <div class="section-title">The<br>Person<br>Behind</div>
+      <p>I am an <strong>Information Technology graduate</strong> with a strong interest in cybersecurity. Currently, I am continuously improving my technical skills through self-learning and hands-on practice, especially in <strong>penetration testing and problem-solving.</strong></p>
+      <p>I believe in discipline, consistency, and self-growth, and I am working towards becoming a skilled <strong>cybersecurity professional</strong> in the future.</p>
+      <div class="about-contact">
+        <div class="contact-item">
+          <span class="label">Phone</span>
+          <span class="value">019-5146734</span>
+        </div>
+        <div class="contact-item">
+          <span class="label">Email</span>
+          <span class="value"><a href="mailto:sfanzury@gmail.com">sfanzury@gmail.com</a></span>
+        </div>
+        <div class="contact-item">
+          <span class="label">Base</span>
+          <span class="value">Malaysia</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-label">02 — Skills</div>
+  <div class="section-title reveal">What I<br>Bring</div>
+  <div class="skills-grid reveal">
+    <div class="skill-card">
+      <span class="skill-icon">🐧</span>
+      <div class="skill-name">Linux Fundamentals</div>
+      <div class="skill-desc">Comfortable navigating, configuring, and operating Linux-based systems for security and development workflows.</div>
+    </div>
+    <div class="skill-card">
+      <span class="skill-icon">🔐</span>
+      <div class="skill-name">Penetration Testing</div>
+      <div class="skill-desc">Actively developing skills in ethical hacking, vulnerability assessment, and security auditing through hands-on practice.</div>
+    </div>
+    <div class="skill-card">
+      <span class="skill-icon">🛠️</span>
+      <div class="skill-name">IT Support</div>
+      <div class="skill-desc">Hardware and software troubleshooting, device maintenance, and end-user technical assistance.</div>
+    </div>
+    <div class="skill-card">
+      <span class="skill-icon">👥</span>
+      <div class="skill-name">Leadership &amp; Teamwork</div>
+      <div class="skill-desc">Proven ability to lead and collaborate within teams, with strong communication and project coordination skills.</div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="section-label">03 — Experience</div>
+  <div class="section-title reveal">Work<br>History</div>
+  <div class="experience-list reveal">
+    <div class="exp-item">
+      <div>
+        <div class="exp-date">Jul 2024<br>— Jun 2025</div>
+        <div class="exp-company">Lasto Sdn. Bhd</div>
+      </div>
+      <div>
+        <div class="exp-role">IT Technician</div>
+        <div class="exp-desc">Performed maintenance tasks on IT equipment including computers, laptops and other electronic devices. Ensured reliable hardware performance and assisted with technical troubleshooting across departments.</div>
+        <div class="exp-tags">
+          <span class="exp-tag">Hardware</span>
+          <span class="exp-tag">Maintenance</span>
+          <span class="exp-tag">Troubleshooting</span>
+          <span class="exp-tag">IT Support</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education">
+  <div class="section-label">04 — Education</div>
+  <div class="section-title reveal">Academic<br>Path</div>
+  <div class="edu-grid reveal">
+    <div class="edu-card">
+      <div class="edu-num">01</div>
+      <div class="edu-school">Polytechnic Seberang Perai</div>
+      <div class="edu-degree">Diploma in<br>Information Technology</div>
+    </div>
+    <div class="edu-card">
+      <div class="edu-num">02</div>
+      <div class="edu-school">University Tun Hussein Onn Malaysia</div>
+      <div class="edu-degree">Bachelor of<br>Information Security</div>
+    </div>
+  </div>
+</section>
+
+<!-- TERMINAL / CONTACT -->
+<section id="terminal-section">
+  <div class="section-label">05 — Contact</div>
+  <div class="section-title reveal">Let's<br>Connect</div>
+  <div class="terminal reveal">
+    <div class="terminal-header">
+      <div class="dot dot-r"></div>
+      <div class="dot dot-y"></div>
+      <div class="dot dot-g"></div>
+      <span class="terminal-title">syawal@portfolio — bash</span>
+    </div>
+    <div class="terminal-body" id="terminalBody"></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-name">SYAWAL FANZURY</div>
+  <div class="footer-copy">© 2025 — Cybersecurity Portfolio</div>
+</footer>
+
+<script>
+  // CURSOR
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cursor.style.left = mx+'px'; cursor.style.top = my+'px'; });
+  function animateRing() {
+    rx += (mx - rx) * 0.14;
+    ry += (my - ry) * 0.14;
+    ring.style.left = rx+'px';
+    ring.style.top = ry+'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+  document.querySelectorAll('a, button, .skill-card, .exp-item').forEach(el => {
+    el.addEventListener('mouseenter', () => { ring.style.width='60px'; ring.style.height='60px'; ring.style.borderColor='rgba(245,245,240,0.8)'; });
+    el.addEventListener('mouseleave', () => { ring.style.width='36px'; ring.style.height='36px'; ring.style.borderColor='rgba(245,245,240,0.5)'; });
+  });
+
+  // MOBILE MENU
+  function toggleMenu() {
+    const links = document.getElementById('navLinks');
+    const ham = document.getElementById('hamburger');
+    links.classList.toggle('open');
+    ham.classList.toggle('open');
+  }
+  function closeMenu() {
+    document.getElementById('navLinks').classList.remove('open');
+    document.getElementById('hamburger').classList.remove('open');
+  }
+
+  // SCROLL REVEAL
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // TERMINAL TYPEWRITER
+  const lines = [
+    { type: 'prompt', text: '~ $ whoami' },
+    { type: 'out', text: 'syawal_fanzury — IT Technician & Cybersecurity Learner' },
+    { type: 'prompt', text: '~ $ cat contact.txt' },
+    { type: 'green', text: '  email   : sfanzury@gmail.com' },
+    { type: 'green', text: '  phone   : 019-5146734' },
+    { type: 'green', text: '  location: Malaysia' },
+    { type: 'prompt', text: '~ $ status' },
+    { type: 'out', text: '  ✓ Open to opportunities in cybersecurity' },
+    { type: 'out', text: '  ✓ Available for IT support & penetration testing roles' },
+    { type: 'cursor', text: '~ $ ' },
+  ];
+
+  const tbody = document.getElementById('terminalBody');
+  let lineIdx = 0, charIdx = 0;
+
+  function typeNext() {
+    if (lineIdx >= lines.length) return;
+    const line = lines[lineIdx];
+    if (line.type === 'cursor') {
+      tbody.innerHTML += `<div><span class="t-prompt">${line.text}</span><span class="t-cursor"></span></div>`;
+      return;
+    }
+    if (charIdx === 0) {
+      tbody.innerHTML += `<div id="tline-${lineIdx}" class="t-${line.type === 'prompt' ? 'cmd' : line.type}"></div>`;
+      if (line.type === 'prompt') {
+        document.getElementById(`tline-${lineIdx}`).innerHTML = `<span class="t-prompt">~ $ </span>`;
+      }
+    }
+    const el = document.getElementById(`tline-${lineIdx}`);
+    const txt = line.type === 'prompt' ? line.text.replace('~ $ ','') : line.text;
+    if (charIdx < txt.length) {
+      if (line.type === 'prompt') {
+        el.innerHTML = `<span class="t-prompt">~ $ </span>${txt.slice(0,charIdx+1)}`;
+      } else {
+        el.textContent = txt.slice(0,charIdx+1);
+      }
+      charIdx++;
+      setTimeout(typeNext, line.type === 'prompt' ? 45 : 18);
+    } else {
+      lineIdx++; charIdx = 0;
+      setTimeout(typeNext, line.type === 'prompt' ? 280 : 100);
+    }
+  }
+
+  // Start terminal when visible
+  const termObs = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) { setTimeout(typeNext, 500); termObs.disconnect(); }
+  }, { threshold: 0.3 });
+  termObs.observe(document.getElementById('terminal-section'));
+</script>
+</body>
+</html>
